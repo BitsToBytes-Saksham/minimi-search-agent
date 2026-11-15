@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Minimi · A little more certain</title>
+  <link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Minimi home"><span class="mark">m<span>•</span></span> minimi</a>
+    <button id="new-chat" class="new-chat">＋ New conversation</button>
+    <div class="section-label">YOUR CONVERSATIONS</div>
+    <nav id="chats" aria-label="Conversations"></nav>
+    <div class="sidebar-foot"><span class="live-dot"></span> One tool. A longer memory.<p>Saved on this device.</p></div>
+  </aside>
+  <main>
+    <header><div><span class="live-dot"></span> SEARCH & REMEMBER</div><button id="history-toggle" class="quiet">◷ History</button></header>
+    <div id="notice" role="alert" hidden></div>
+    <section id="welcome" class="welcome">
+      <div class="eyebrow">LESS GUESSWORK. MORE CLARITY.</div>
+      <h1>A little more<br><em>certain.</em></h1>
+      <p>Ask what's on your mind. I'll search when it matters,<br>and remember where we left off.</p>
+      <div class="suggestions">
+        <button data-prompt="Find one interesting space discovery announced this week. Cite the original source."><span>↗</span> Something new<div>A discovery worth knowing</div></button>
+        <button data-prompt="What have I asked you so far, and when?"><span>◷</span> Pick up the thread<div>What we talked about, and when</div></button>
+      </div>
+    </section>
+    <section id="messages" aria-label="Messages"></section>
+    <div class="composer-wrap">
+      <div id="status" role="status" aria-live="polite"></div>
+      <form id="composer">
+        <label class="sr-only" for="prompt">Your message</label>
+        <textarea id="prompt" placeholder="Ask anything. Keep the thread." rows="2" maxlength="8000" required></textarea>
+        <div class="composer-bottom"><label class="search-choice">◎ <select id="search-mode" aria-label="Web search mode"><option value="auto">Search when needed</option><option value="always">Always search</option><option value="never">No search this turn</option></select></label><button id="stop" type="button" hidden>Stop</button><button id="send" type="submit" aria-label="Send message">↑</button></div>
+      </form>
+      <div class="fine-print">Web sources, when needed. Memory, with timestamps. Verify important answers.</div>
+    </div>
+  </main>
+  <aside id="history" class="history" hidden>
+    <div class="history-heading"><h2>Your timeline</h2><button id="history-close" aria-label="Close history">×</button></div>
+    <p>What you asked. Exactly when.</p>
+    <label class="sr-only" for="history-search">Search saved questions or dates</label><input id="history-search" type="search" placeholder="Search questions or dates…">
+    <div id="timeline"></div>
+    <div class="history-actions"><button id="export">Export JSON</button><button id="delete" class="danger">Delete chat</button></div>
+  </aside>
+</body>
+</html>
