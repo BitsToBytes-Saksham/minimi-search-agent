@@ -170,7 +170,7 @@ $('#delete').onclick = async () => {
 };
 try {
   const config = await api('/api/config');
-  if (!config.configured) notice('Add your OpenAI API key to .env and restart to begin chatting.');
+  if (!config.configured) notice(`Add ${config.keyName} to .env and restart to begin chatting.`);
   const chats = await refreshChats();
   const saved = localStorage.getItem('minimi.chat');
   const existing = chats.find(item => item.id === saved) ?? chats[0];

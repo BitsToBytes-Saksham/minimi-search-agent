@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { Memory } from './memory.js';
-import { runAgent } from './agent.js';
+import { runAgent, providerConfig } from './provider.js';
 
 const files = new Map(['index.html', 'app.js', 'style.css'].map(name => [
   name === 'index.html' ? '/' : `/${name}`,
@@ -43,7 +43,7 @@ export function createApp({ directory = process.env.DATA_DIR || './data', agent 
         res.writeHead(200, { 'Content-Type': `${file.type}; charset=utf-8` });
         return res.end(file.content);
       }
-      if (req.method === 'GET' && url.pathname === '/api/config') return json(200, { configured: Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_MODEL || 'gpt-5-mini' });
+      if (req.method === 'GET' && url.pathname === '/api/config') return json(200, providerConfig());
       if (url.pathname === '/api/chats') {
         if (req.method === 'GET') return json(200, memory.list());
         if (req.method === 'POST') {
@@ -60,7 +60,8 @@ export function createApp({ directory = process.env.DATA_DIR || './data', agent 
         const { message, search = 'auto' } = await readJSON(req);
         if (typeof message !== 'string' || !message.trim() || message.length > 8000) throw fail(400, 'Enter a message of 1–8,000 characters');
         if (!['auto', 'always', 'never'].includes(search)) throw fail(400, 'Invalid search mode');
-        if (!process.env.OPENAI_API_KEY && agent === runAgent) throw fail(503, 'Set OPENAI_API_KEY in .env and restart the server');
+        const config = providerConfig();
+        if (!config.configured && agent === runAgent) throw fail(503, `Set ${config.keyName} in .env and restart the server`);
         if (busy.has(id)) throw fail(409, 'This conversation already has a response in progress');
         if (busy.size >= 4) throw fail(429, 'Too many active responses; please wait');
         const chat = memory.get(id);
@@ -77,7 +78,8 @@ export function createApp({ directory = process.env.DATA_DIR || './data', agent 
           emit('status', { text: 'Thinking…' });
           const result = await agent(chat, message.trim(), search, emit, controller.signal);
           const saved = memory.append(chat, 'assistant', result.text, { citations: result.citations,
-            searches: result.searches, firstTokenMs: result.firstTokenMs, totalMs: result.totalMs });
+            searches: result.searches,
+            firstTokenMs: result.firstTokenMs, totalMs: result.totalMs });
           emit('done', { message: saved });
         } catch (error) {
           if (userMessage) { userMessage.status = 'failed'; memory.save(chat); }
